@@ -479,12 +479,12 @@ Return strictly valid JSON only.
         pptx.defineLayout({ name: 'DobbyTheme', width: 10, height: 5.625 });
   pptx.layout = 'DobbyTheme';
 
-  const theme = {
-    bg: '003366',
-    accent: 'ffb74d',
-    text: 'ffffff',
-    muted: 'cccccc'
-  };
+ const theme = {
+  bg: 'eaf4ff',   // soft sky-blue background
+  accent: '4da6ff', // bright blue for titles and highlights
+  text: '0b1a33',   // dark navy text for readability
+  muted: '5c7a99'   // soft slate-blue for secondary text
+};
 
 
 const cover = pptx.addSlide();
@@ -555,6 +555,7 @@ cover.addText(topicname,
   </script>
 </body>
 </html>
+
 
 
 
