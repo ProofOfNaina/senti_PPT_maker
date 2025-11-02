@@ -322,7 +322,7 @@ footer strong {
         card.innerHTML = `
           <h3>${i+1}. ${escapeHtml(s.title)}</h3>
           <ul class="bullets">
-            ${(s.bullets || []).slice(0,5).map(b => `<li>${escapeHtml(b)}</li>`).join('')}
+            ${(s.bullets || []).slice(0,5).map(b => `<li>${escapeHtml(cleanText(b))}</li>`).join('')}
           </ul>
           <div class="notes">${escapeHtml(s.notes || '')}</div>
         `;
@@ -331,7 +331,19 @@ footer strong {
     }
 
     function escapeHtml(str){ if(!str) return ''; return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function cleanText(str) {
+  if (!str) return '';
+  // Replace any offensive or unsafe language with neutral wording
+  const badWords = [
+    /fuck/gi, /shit/gi, /bitch/gi, /asshole/gi, /dumb/gi, /stupid/gi,
+    /kill/gi, /suicide/gi, /racist/gi, /sex/gi, /hate/gi
+  ];
+  let clean = str;
+  badWords.forEach(w => clean = clean.replace(w, '[removed]'));
+  return clean;
+}
 
+    
     async function callDobbyAPI({topic, audience, tone, slidesCount, points}) {
       if (!FIREWORKS_API_KEY) throw new Error('No FIREWORKS_API_KEY set');
       const bulletsBlock = (points || []).map(p => `- ${p}`).join('\n');
@@ -543,6 +555,7 @@ cover.addText(topicname,
   </script>
 </body>
 </html>
+
 
 
 
