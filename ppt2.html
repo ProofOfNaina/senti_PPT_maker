@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Detailed Presentation Writer — Dobby</title>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+
+  <style>
+    :root {
+      --bg:#071020;
+      --panel:#0e1a2a;
+      --muted:#9fb0c9;
+      --accent1:#ffb74d;
+      --accent2:#7cc4ff;
+      --card:#fff;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin:0;
+      min-height:100vh;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(180deg,#071028 0%, #061022 100%);
+      color:#e6eef8;
+      display:flex;
+      justify-content:center;
+      padding:28px;
+    }
+    .wrap {
+      width:100%;
+      max-width:1200px;
+      display:grid;
+      grid-template-columns: 380px 1fr;
+      gap:22px;
+    }
+    .panel {
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:18px;
+      border-radius:12px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    h1{margin:0 0 8px;font-size:20px}
+    .muted{color:var(--muted);font-size:13px;margin-bottom:12px}
+    label{display:block;font-weight:600;margin-top:12px;color:#cfe0ff}
+    input[type="text"], textarea, select, input[type="number"]{
+      width:100%; padding:10px 12px; margin-top:8px;
+      border-radius:8px; border:1px solid rgba(255,255,255,0.06);
+      background:transparent; color:inherit; font-size:14px; resize:vertical;
+    }
+    textarea{min-height:120px}
+    .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    button{
+      background:linear-gradient(180deg,var(--accent1),#c78c2b);
+      color:#07202a;border:none;padding:10px 14px;border-radius:8px;
+      font-weight:700;cursor:pointer;
+    }
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
+    .preview-top{display:flex;justify-content:space-between;align-items:center}
+    .slides{display:grid;grid-template-columns: repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:14px;}
+    .card{
+      background:var(--card);color:#13292f;padding:14px;border-radius:10px;
+      min-height:130px;box-shadow:0 8px 20px rgba(2,6,23,0.4);
+      border:1px solid rgba(0,0,0,0.06);display:flex;flex-direction:column;
+    }
+    .card h3{margin:0 0 8px;font-size:16px}
+    .bullets{margin:0 0 8px 18px;color:#333}
+    .notes{font-size:12px;color:#555;margin-top:auto;background:#f7f4ee;padding:8px;border-radius:6px}
+    img.logo-preview {
+      max-height:50px;
+      border-radius:6px;
+      background:#fff;
+      padding:4px;
+    }
+ footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 12px 10px;
+  font-size: 14px;
+  color: #d0d8e8;
+  background: linear-gradient(to right, rgba(10,10,15,0.85), rgba(20,20,30,0.85));
+  border-top: 1px solid rgba(255,255,255,0.1);
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
+  z-index: 100;
+}
+
+footer strong {
+  color: #ffd633;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  footer {
+    font-size: 13px;
+    padding: 10px 8px;
+    line-height: 1.4;
+  }
+}
+
+  </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="panel">
+      <h1>Detailed Presentation Writer</h1>
+      <div class="muted">Generate detailed slides & download a styled PPTX — cover, content slides and conclusion.</div>
+
+         <label for="logoFile">Choose Logo (PNG/JPG)</label>
+      <input id="logoFile" type="file" accept="image/*" />
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <img id="logoPreview" class="logo-preview" src="" alt="logo preview" style="display:none" />
+        <div class="small muted" id="logoNote">Logo will appear on cover and thank-you slide.</div>
+      </div>
+
+      <label for="topic">Presentation Topic</label>
+      <input id="topic" type="text" placeholder="e.g. The Crypto Market: Trends & Risks">
+
+      <label for="audience">Audience</label>
+      <input id="audience" type="text" placeholder="e.g. Students, Investors, Product Team">
+
+      <label for="tone">Tone</label>
+      <select id="tone">
+        <option value="professional">Professional / Clear</option>
+        <option value="persuasive">Persuasive</option>
+        <option value="educational">Educational</option>
+        <option value="inspirational">Inspirational</option>
+      </select>
+
+      <label for="slidesCount">Slides Count (incl. cover & conclusion)</label>
+      <input id="slidesCount" type="number" value="6" min="3" max="20">
+
+      <label for="points">Key Points (one per line)</label>
+      <textarea id="points" placeholder="e.g. market capitalization\nprice comparison\ntrending coins"></textarea>
+
+      <div class="controls">
+        <button id="generateBtn">✨ Generate Detailed Slides</button>
+        <button id="offlineBtn" class="secondary">Offline Generator</button>
+        <button id="downloadPPTX">📊 Download PPTX</button>
+        <button id="exportMD" class="secondary">📄 Export Markdown</button>
+      </div>
+
+      <div class="footnote">Tip: provide concise key points. The local generator expands each point into 3–5 useful bullets + speaker notes. For AI-powered variation add your Dobby API key inside the script (not recommended for public sites).</div>
+    </div>
+
+    <div class="panel">
+      <div class="preview-top">
+        <div>
+          <strong id="previewTitle">Presentation Preview</strong>
+          <div id="previewSubtitle" class="muted">Generate to see detailed slide cards.</div>
+        </div>
+        <div id="status" class="muted">Idle</div>
+      </div>
+
+      <div class="slides" id="slidesContainer"></div>
+    </div>
+</div>
+            <footer>
+    Designed & Developed by <strong>Naina</strong> | Powered by <strong>Sentient x Fireworks AI</strong>
+  </footer>
+
+     
+  
+
+
+
+  <script>
+  
+    const FIREWORKS_API_KEY = 'fw_3ZWjAcC9oUwQtoRxFhqDpn2M'; 
+    const FIREWORKS_URL = 'https://api.fireworks.ai/inference/v1/chat/completions';
+    const MODEL = 'accounts/sentientfoundation-serverless/models/dobby-mini-unhinged-plus-llama-3-1-8b';
+
+   
+   
+    const topicEl = document.getElementById('topic');
+    const audienceEl = document.getElementById('audience');
+    const toneEl = document.getElementById('tone');
+    const slidesCountEl = document.getElementById('slidesCount');
+    const pointsEl = document.getElementById('points');
+    const generateBtn = document.getElementById('generateBtn');
+    const offlineBtn = document.getElementById('offlineBtn');
+    const downloadPPTX = document.getElementById('downloadPPTX');
+    const exportMD = document.getElementById('exportMD');
+    const slidesContainer = document.getElementById('slidesContainer');
+    const statusEl = document.getElementById('status');
+    const previewSubtitle = document.getElementById('previewSubtitle');
+       const logoFile = document.getElementById('logoFile');
+    const logoPreview = document.getElementById('logoPreview');
+
+    let lastSlides = [];
+
+    let logoDataURL = null;
+
+    logoFile.addEventListener('change', () => {
+      const file = logoFile.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        logoDataURL = e.target.result;
+        logoPreview.src = logoDataURL;
+        logoPreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function setStatus(txt){ statusEl.textContent = txt; }
+    function safeText(s){ return (s||'').toString(); }
+    function downloadFile(filename, content, mime='application/octet-stream'){ const b=new Blob([content],{type:mime}); const url=URL.createObjectURL(b); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+
+
+    function makeTitleFromPoint(pt){
+
+      let t = pt.trim();
+      if (!t) return 'Key Point';
+      if (t.length > 60) {
+   
+        const idx = t.indexOf(',');
+        if (idx > 0) t = t.slice(0, idx);
+        else t = t.slice(0, 60) + '…';
+      }
+    
+      return t.charAt(0).toUpperCase() + t.slice(1);
+    }
+
+    function expandPointToBullets(point, topic, audience, tone){
+ 
+      const b = [];
+      point = point.trim();
+      // bullet 1: concise explanation
+      b.push(`${point} — what it means and why it matters.`);
+      // bullet 2: an example or metric
+      b.push(`Example: a concrete case or metric related to ${point}.`);
+      // bullet 3: implication / recommendation
+      b.push(`Implication: how this affects ${audience || 'the audience'} and recommended action.`);
+      // optional extra: visualization idea if point is numeric or comparative
+      if (/price|value|compare|market|trend|growth|size|volume/i.test(point)) {
+        b.push('Visualization idea: chart comparing values / trend line over time.');
+      } else if (/strategy|plan|roadmap|timeline/i.test(point)) {
+        b.push('Visual: timeline or roadmap with milestones.');
+      }
+      return b;
+    }
+
+    function speakerNotesFromBullets(title, bullets){
+      // create 1-2 sentence notes summarizing slide
+      const lead = `Talk through ${title.toLowerCase()}: `;
+      const summary = bullets[0] ? bullets[0].replace(/\s*—.*/,'') : '';
+      const action = bullets[2] ? bullets[2].replace(/^Implication:\s*/,'') : '';
+      let note = lead + (summary || 'main idea') + (action ? `. Key takeaway: ${action}` : '.');
+      return note;
+    }
+
+    function generateDetailedSlidesLocal({topic, audience, tone, slidesCount, points}) {
+      const slides = [];
+     
+      const contentPoints = points.length ? points : ['Overview and context'];
+     
+      const numContentSlides = Math.max(1, slidesCount - 2);
+   
+      const perSlide = Math.max(1, Math.ceil(contentPoints.length / numContentSlides));
+      let idx = 0;
+      for (let i = 0; i < numContentSlides; i++) {
+        const slice = contentPoints.slice(idx, idx + perSlide);
+        idx += perSlide;
+        if (slice.length === 0) {
+          slides.push({
+            title: `Additional detail`,
+            bullets: ['Add supporting evidence', 'Discuss implications', 'Next steps'],
+            notes: 'Expand on additional details and provide examples.'
+          });
+          continue;
+        }
+        
+        const combined = slice.join(' — ');
+        const title = makeTitleFromPoint(slice[0]);
+        const bullets = expandPointToBullets(combined, topic, audience, tone);
+        const notes = speakerNotesFromBullets(title, bullets);
+        slides.push({title, bullets, notes});
+      }
+
+    
+      slides.push({
+        title: 'Conclusion & Next Steps',
+        bullets: [
+          'Key takeaways — concise summary of main points',
+          'Recommended actions or decisions',
+          'Questions and follow-up items'
+        ],
+        notes: 'Summarize the talk, present clear next steps, and invite questions.'
+      });
+ 
+      const thank=pptx.addSlide();
+      thank.addText('Thank You',{x:0.5,y:2.4,w:9,h:1,fontSize:36,bold:true,color:'003366',align:'center'});
+      thank.addText('Questions or feedback welcome!',{x:0.5,y:3.6,w:9,h:0.5,fontSize:18,color:'555',align:'center'});
+      if(logoDataURL){
+        thank.addImage({data:logoDataURL,x:4.2,y:4.8,w:1.6,h:1.6});
+      }
+
+      if (slides.length > slidesCount) slides.length = slidesCount;
+      while (slides.length < slidesCount) {
+        slides.push({
+          title: 'Additional Notes',
+          bullets: ['Extra detail', 'Further reading', 'Contact info'],
+          notes: 'Add any remaining context or callouts.'
+        });
+      }
+      return slides;
+    }
+
+
+    function renderSlides(slides) {
+      slidesContainer.innerHTML = '';
+      if (!slides || slides.length === 0) {
+        slidesContainer.innerHTML = '<div class="muted">No slides yet — generate to preview.</div>';
+        return;
+      }
+      slides.forEach((s,i) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>${i+1}. ${escapeHtml(s.title)}</h3>
+          <ul class="bullets">
+            ${(s.bullets || []).slice(0,5).map(b => `<li>${escapeHtml(b)}</li>`).join('')}
+          </ul>
+          <div class="notes">${escapeHtml(s.notes || '')}</div>
+        `;
+        slidesContainer.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str){ if(!str) return ''; return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    async function callDobbyAPI({topic, audience, tone, slidesCount, points}) {
+      if (!FIREWORKS_API_KEY) throw new Error('No FIREWORKS_API_KEY set');
+      const bulletsBlock = (points || []).map(p => `- ${p}`).join('\n');
+      const userPrompt = `Produce exactly ${slidesCount} slides as JSON with the following structure:
+{
+  "slides": [
+    { "title": "...", "bullets": ["...","..."], "notes":"..." }, ...
+  ]
+}
+Topic: ${topic}
+Audience: ${audience || 'general'}
+Tone: ${tone}
+Key points:
+${bulletsBlock}
+
+Constraints:
+- Return strictly valid JSON and nothing else.
+- Titles <= 8 words.
+- Each slide: 2-5 bullets, each bullet is a short useful sentence.
+- Notes: 1-2 sentences of speaker notes.
+- Ensure there are exactly ${slidesCount} slides (including cover & conclusion).
+`;
+
+      const payload = {
+        model: MODEL,
+        messages: [
+          {role:'system', content:'You are Dobby, a practical presentation writer. Return strictly valid JSON only.'},
+          {role:'user', content:userPrompt}
+        ],
+        max_tokens: 1000
+      };
+
+      const resp = await fetch(FIREWORKS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + FIREWORKS_API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) {
+        const txt = await resp.text();
+        throw new Error('API error: ' + resp.status + ' ' + txt);
+      }
+      const data = await resp.json();
+      const content = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || '';
+      const cleaned = content.replace(/```json|```/gi,'').trim();
+      try {
+        const parsed = JSON.parse(cleaned);
+        if (Array.isArray(parsed.slides)) return parsed.slides;
+        throw new Error('Invalid shape from API');
+      } catch (err) {
+
+        const m = cleaned.match(/\{[\s\S]*\}/);
+        if (m) {
+          const parsed2 = JSON.parse(m[0]);
+          if (Array.isArray(parsed2.slides)) return parsed2.slides;
+        }
+        throw new Error('Failed to parse JSON from API: ' + err.message);
+      }
+    }
+
+
+    generateBtn.addEventListener('click', async () => {
+      const topic = (topicEl.value || '').trim();
+      const audience = (audienceEl.value || '').trim();
+      const tone = toneEl.value;
+      const slidesCount = Math.max(3, Math.min(20, parseInt(slidesCountEl.value) || 6));
+      const points = (pointsEl.value || '').split('\n').map(l => l.trim()).filter(Boolean);
+
+      if (!topic) { alert('Please enter a presentation topic.'); return; }
+
+      setStatus('Generating...');
+      previewSubtitle.textContent = `Generating ${slidesCount} detailed slides for "${topic}"…`;
+      generateBtn.disabled = true;
+
+      try {
+        let slides;
+        if (FIREWORKS_API_KEY) {
+
+          try {
+            slides = await callDobbyAPI({topic, audience, tone, slidesCount, points});
+            setStatus('Generated via Dobby API');
+          } catch (errApi) {
+            console.warn('Dobby API failed, falling back to local generator:', errApi);
+            slides = generateDetailedSlidesLocal({topic, audience, tone, slidesCount, points});
+            setStatus('Local generator (API fallback)');
+          }
+        } else {
+          slides = generateDetailedSlidesLocal({topic, audience, tone, slidesCount, points});
+          setStatus('Local generator');
+        }
+        lastSlides = slides;
+        renderSlides(slides);
+        previewSubtitle.textContent = `Topic: ${topic} — ${slides.length} slides`;
+      } finally {
+        generateBtn.disabled = false;
+      }
+    });
+
+    offlineBtn.addEventListener('click', () => {
+      const topic = (topicEl.value || 'Untitled').trim();
+      const slidesCount = Math.max(3, Math.min(20, parseInt(slidesCountEl.value) || 6));
+      const points = (pointsEl.value || '').split('\n').map(l => l.trim()).filter(Boolean);
+      const slides = generateDetailedSlidesLocal({topic, audience:audienceEl.value, tone:toneEl.value, slidesCount, points});
+      lastSlides = slides;
+      renderSlides(slides);
+      setStatus('Local generator');
+      previewSubtitle.textContent = `Topic: ${topic} — ${slides.length} slides (local)`;
+    });
+
+    
+
+    exportMD.addEventListener('click', () => {
+      if (!lastSlides || lastSlides.length === 0) return alert('No slides to export. Generate first.');
+      const md = lastSlides.map((s,i) => `# Slide ${i+1}: ${s.title}\n\n${(s.bullets||[]).map(b => '- ' + b).join('\n')}\n\n**Notes:** ${s.notes || ''}`).join('\n\n');
+      downloadFile('presentation.md', md, 'text/markdown');
+    });
+
+    downloadPPTX.addEventListener('click', () => {
+      if (!lastSlides || lastSlides.length === 0) return alert('No slides to export. Generate first.');
+      const pptx = new PptxGenJS();
+
+
+const cover = pptx.addSlide();
+
+ cover.addShape(pptx.ShapeType.rect,{x:0,y:0,w:'100%',h:'100%',fill:{color:'003366'}});
+
+cover.slideTransition = { type: 'fade', dur: 1.0 };
+
+if (logoDataURL) {
+  cover.addImage({
+    data: logoDataURL,
+    x: 4.2,     
+    y: 0.8,    
+    w: 1.6,
+    h: 1.6,
+    rounding: 10
+  });
+}
+ const topicname = (topicEl.value || 'presentation')
+
+cover.addText(topicname, 
+  {
+    x: 0.5,
+    y: 2.8,   
+    w: 9,
+    h: 1.5,
+    fontSize: 40,
+    color: '000000',
+    bold: true,
+    align: 'center'
+  }
+);
+
+        cover.addText('Generated with Dobby', {x:0.5, y:6.8, w:9, h:0.3, fontSize:10, color:'000000', align:'center'});
+
+
+     
+      for (let i = 0; i < lastSlides.length; i++) {
+        const s = lastSlides[i];
+        const slide = pptx.addSlide();
+        
+        slide.addText(s.title, {x:0.5, y:0.4, w:9, h:0.6, fontSize:24, bold:true, color:'003366'});
+      
+        const baseY = 1.3;
+        (s.bullets || []).slice(0,6).forEach((b, idx) => {
+          slide.addText('• ' + b, {x:0.6, y: baseY + idx*0.6, w:8.4, h:0.6, fontSize:16, color:'222', bullet:false});
+        });
+ 
+        slide.addText('Speaker notes: ' + (s.notes || ''), {x:0.5, y:5.5, w:9, h:0.6, fontSize:11, color:'666'});
+      }
+
+  
+      const last = lastSlides[lastSlides.length - 1];
+      if (!/conclusion/i.test(last.title)) {
+        const concl = pptx.addSlide();
+        concl.addText('Conclusion & Next Steps', {x:0.5, y:0.4, w:9, h:0.6, fontSize:24, bold:true, color:'003366'});
+        concl.addText('- Key takeaways\n- Recommended actions\n- Q&A', {x:0.6, y:1.2, w:8.4, h:3.5, fontSize:16, color:'222'});
+        concl.addText('Speaker notes: Summarize and invite questions.', {x:0.5, y:5.5, w:9, h:0.6, fontSize:11, color:'666'});
+      }
+
+      const filename = (topicEl.value || 'presentation').trim().replace(/\s+/g,'_').toLowerCase() + '.pptx';
+      pptx.writeFile({fileName: filename});
+    });
+
+
+    renderSlides([]);
+  </script>
+</body>
+</html>
