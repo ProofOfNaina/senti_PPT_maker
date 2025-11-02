@@ -358,7 +358,16 @@ Constraints:
       const payload = {
         model: MODEL,
         messages: [
-          {role:'system', content:'You are Dobby, a practical presentation writer. Return strictly valid JSON only.'},
+          {role:'system', content:`
+You are Dobby, a professional presentation writer.
+Rules:
+- Always be polite, respectful, and positive.
+- Avoid any form of offensive, explicit, or abusive language.
+- Maintain clarity and a tone aligned with the requested style (professional, persuasive, educational, or inspirational).
+- Encourage constructive, inclusive communication.
+Return strictly valid JSON only.
+`}
+,
           {role:'user', content:userPrompt}
         ],
         max_tokens: 1000
@@ -455,10 +464,19 @@ Constraints:
     downloadPPTX.addEventListener('click', () => {
       if (!lastSlides || lastSlides.length === 0) return alert('No slides to export. Generate first.');
       const pptx = new PptxGenJS();
+        pptx.defineLayout({ name: 'DobbyTheme', width: 10, height: 5.625 });
+  pptx.layout = 'DobbyTheme';
+
+  const theme = {
+    bg: '003366',
+    accent: 'ffb74d',
+    text: 'ffffff',
+    muted: 'cccccc'
+  };
 
 
 const cover = pptx.addSlide();
-
+cover.background = { color: theme.bg };
  cover.addShape(pptx.ShapeType.rect,{x:0,y:0,w:'100%',h:'100%',fill:{color:'003366'}});
 
 cover.slideTransition = { type: 'fade', dur: 1.0 };
@@ -495,7 +513,7 @@ cover.addText(topicname,
       for (let i = 0; i < lastSlides.length; i++) {
         const s = lastSlides[i];
         const slide = pptx.addSlide();
-        
+          slide.background = { color: theme.bg };
         slide.addText(s.title, {x:0.5, y:0.4, w:9, h:0.6, fontSize:24, bold:true, color:'003366'});
       
         const baseY = 1.3;
@@ -510,6 +528,7 @@ cover.addText(topicname,
       const last = lastSlides[lastSlides.length - 1];
       if (!/conclusion/i.test(last.title)) {
         const concl = pptx.addSlide();
+         concl.background = { color: theme.bg };
         concl.addText('Conclusion & Next Steps', {x:0.5, y:0.4, w:9, h:0.6, fontSize:24, bold:true, color:'003366'});
         concl.addText('- Key takeaways\n- Recommended actions\n- Q&A', {x:0.6, y:1.2, w:8.4, h:3.5, fontSize:16, color:'222'});
         concl.addText('Speaker notes: Summarize and invite questions.', {x:0.5, y:5.5, w:9, h:0.6, fontSize:11, color:'666'});
@@ -524,4 +543,5 @@ cover.addText(topicname,
   </script>
 </body>
 </html>
+
 
